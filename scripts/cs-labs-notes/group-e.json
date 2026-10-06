@@ -1,0 +1,30 @@
+[
+  {
+    "id": "functional-programming-patterns",
+    "title": "Functional Programming Patterns",
+    "type": "concept",
+    "order": 18,
+    "pinned": false
+  },
+  {
+    "id": "oop-in-javascript",
+    "title": "OOP in JavaScript",
+    "type": "concept",
+    "order": 19,
+    "pinned": false
+  },
+  {
+    "id": "js-builtin-reimplementations",
+    "title": "JS Built-in Reimplementations",
+    "type": "concept",
+    "order": 20,
+    "pinned": false
+  },
+  {
+    "id": "applied-coding-challenges",
+    "title": "Applied Coding Challenges",
+    "type": "concept",
+    "order": 21,
+    "pinned": false
+  }
+]

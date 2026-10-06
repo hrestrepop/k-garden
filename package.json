@@ -1,0 +1,49 @@
+{
+  "name": "k-garden",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack --port=8000",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "node scripts/copy-pyodide.mjs",
+    "seed": "node scripts/seed-content.mjs && node scripts/seed-cs-labs.mjs"
+  },
+  "dependencies": {
+    "@blocknote/code-block": "^0.50.0",
+    "@blocknote/core": "^0.50.0",
+    "@blocknote/mantine": "^0.50.0",
+    "@blocknote/react": "^0.50.0",
+    "@chakra-ui/react": "^3.35.0",
+    "@emotion/react": "^11.14.0",
+    "@mantine/core": "^9.1.1",
+    "@mantine/hooks": "^9.1.1",
+    "@shikijs/core": "^4.0.2",
+    "@shikijs/engine-javascript": "^4.0.2",
+    "@shikijs/langs-precompiled": "^4.0.2",
+    "@shikijs/themes": "^4.0.2",
+    "@shikijs/types": "^4.0.2",
+    "date-fns": "^4.1.0",
+    "gray-matter": "^4.0.3",
+    "katex": "^0.19.0",
+    "lucide-react": "^1.14.0",
+    "next": "16.2.5",
+    "pyodide": "^314.0.7",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "shiki": "^4.0.2",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/katex": "^0.16.8",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

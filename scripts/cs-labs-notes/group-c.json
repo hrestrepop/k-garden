@@ -1,0 +1,37 @@
+[
+  {
+    "id": "dynamic-programming",
+    "title": "Dynamic Programming",
+    "type": "concept",
+    "order": 9,
+    "pinned": false
+  },
+  {
+    "id": "greedy-algorithms",
+    "title": "Greedy Algorithms",
+    "type": "concept",
+    "order": 10,
+    "pinned": false
+  },
+  {
+    "id": "hashmaps-and-frequency-tricks",
+    "title": "Hashmaps & Frequency Tricks",
+    "type": "concept",
+    "order": 11,
+    "pinned": false
+  },
+  {
+    "id": "stacks-and-queues",
+    "title": "Stacks & Queues",
+    "type": "concept",
+    "order": 12,
+    "pinned": false
+  },
+  {
+    "id": "linked-lists",
+    "title": "Linked Lists",
+    "type": "concept",
+    "order": 13,
+    "pinned": false
+  }
+]

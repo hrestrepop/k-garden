@@ -1,0 +1,5 @@
+[
+  { "id": "big-o-and-complexity", "title": "Big O & Complexity", "type": "cheatsheet", "order": 0, "pinned": true },
+  { "id": "core-cs-concepts", "title": "Core CS Concepts", "type": "concept", "order": 1, "pinned": true },
+  { "id": "personal-learnings-and-retro", "title": "Personal Learnings & Retro", "type": "questions", "order": 3, "pinned": false }
+]

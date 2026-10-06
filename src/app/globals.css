@@ -1,0 +1,864 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+html.dark body {
+  background: #030712;
+  color: #e2e8f0;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================================
+   BlockNote — Notion-style content
+   ============================================================ */
+
+:root {
+  /* BlockNote highlight palette — hoisted to :root so portaled dropdowns can read them */
+  --bn-colors-highlights-gray-text: #9b9a97;
+  --bn-colors-highlights-gray-background: #ebeced;
+  --bn-colors-highlights-brown-text: #64473a;
+  --bn-colors-highlights-brown-background: #e9e5e3;
+  --bn-colors-highlights-red-text: #e03e3e;
+  --bn-colors-highlights-red-background: #fbe4e4;
+  --bn-colors-highlights-orange-text: #d9730d;
+  --bn-colors-highlights-orange-background: #f6e9d9;
+  --bn-colors-highlights-yellow-text: #dfab01;
+  --bn-colors-highlights-yellow-background: #fbf3db;
+  --bn-colors-highlights-green-text: #4d6461;
+  --bn-colors-highlights-green-background: #ddedea;
+  --bn-colors-highlights-blue-text: #0b6e99;
+  --bn-colors-highlights-blue-background: #ddebf1;
+  --bn-colors-highlights-purple-text: #6940a5;
+  --bn-colors-highlights-purple-background: #eae4f2;
+  --bn-colors-highlights-pink-text: #ad1a72;
+  --bn-colors-highlights-pink-background: #f4dfeb;
+}
+
+html.dark {
+  --bn-colors-highlights-gray-text: #bebdb8;
+  --bn-colors-highlights-gray-background: #9b9a97;
+  --bn-colors-highlights-brown-text: #8e6552;
+  --bn-colors-highlights-brown-background: #64473a;
+  --bn-colors-highlights-red-text: #ec4040;
+  --bn-colors-highlights-red-background: #be3434;
+  --bn-colors-highlights-orange-text: #e3790d;
+  --bn-colors-highlights-orange-background: #b7600a;
+  --bn-colors-highlights-yellow-text: #dfab01;
+  --bn-colors-highlights-yellow-background: #b58b00;
+  --bn-colors-highlights-green-text: #6b8b87;
+  --bn-colors-highlights-green-background: #4d6461;
+  --bn-colors-highlights-blue-text: #0e87bc;
+  --bn-colors-highlights-blue-background: #0b6e99;
+  --bn-colors-highlights-purple-text: #8552d7;
+  --bn-colors-highlights-purple-background: #6940a5;
+  --bn-colors-highlights-pink-text: #da208f;
+  --bn-colors-highlights-pink-background: #ad1a72;
+}
+
+:root {
+  --pp-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --pp-fg: #37352f;
+  --pp-fg-muted: #6b7280;
+  --pp-code-bg: #f6f5f3;
+  --pp-code-fg: #eb5757;
+  --pp-code-block-bg: whiteSmoke;
+  --pp-code-block-fg: #37352f;
+  --pp-quote-border: #37352f;
+  --pp-divider: #e5e7eb;
+  --pp-table-border: #e5e7eb;
+  --pp-callout-bg: #f1f1ef;
+  --pp-selection: rgba(16, 185, 129, 0.25);
+  --pp-link: #0d9488;
+}
+
+html.dark {
+  --pp-fg: #e6e6e3;
+  --pp-fg-muted: #9ca3af;
+  --pp-code-bg: rgba(135, 131, 120, 0.18);
+  --pp-code-fg: #ff8585;
+  --pp-code-block-bg: #1f1f1f;
+  --pp-code-block-fg: #e6e6e3;
+  --pp-quote-border: #e6e6e3;
+  --pp-divider: #2a2a2a;
+  --pp-table-border: #2f2f2f;
+  --pp-callout-bg: #2a2a2a;
+  --pp-selection: rgba(16, 185, 129, 0.35);
+  --pp-link: #34d399;
+}
+
+/* Base editor surface */
+.bn-container,
+.bn-editor {
+  background: transparent !important;
+  color: var(--pp-fg) !important;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif !important;
+}
+
+.bn-editor {
+  padding-inline: 0 !important;
+}
+
+.bn-inline-content em,
+.bn-editor em {
+  font-style: italic !important;
+}
+
+.bn-default-styles,
+.bn-block-content,
+.bn-inline-content {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: var(--pp-fg) !important;
+}
+
+.bn-block-content {
+  padding: 3px 2px !important;
+}
+
+/* Selection highlight */
+.bn-editor ::selection {
+  background: var(--pp-selection);
+}
+
+/* ---- Headings ---------------------------------------------- */
+/* H1 in BlockNote has no data-level attr (it's the default), so cover
+   both [data-level="1"] and the missing-attr case. */
+
+.bn-block-content[data-content-type="heading"]:not([data-level]),
+.bn-block-content[data-content-type="heading"][data-level="1"],
+.bn-block-content[data-content-type="heading"]:not([data-level])
+  .bn-inline-content,
+.bn-block-content[data-content-type="heading"][data-level="1"]
+  .bn-inline-content {
+  font-size: 1.5em !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.015em !important;
+}
+.bn-block-content[data-content-type="heading"][data-level="2"],
+.bn-block-content[data-content-type="heading"][data-level="2"]
+  .bn-inline-content {
+  font-size: 1.3em !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em !important;
+}
+.bn-block-content[data-content-type="heading"][data-level="3"],
+.bn-block-content[data-content-type="heading"][data-level="3"]
+  .bn-inline-content {
+  font-size: 1.25em !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+.bn-block-content[data-content-type="heading"][data-level="4"],
+.bn-block-content[data-content-type="heading"][data-level="4"]
+  .bn-inline-content {
+  font-size: 1.05em !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+.bn-block-content[data-content-type="heading"][data-level="5"],
+.bn-block-content[data-content-type="heading"][data-level="5"]
+  .bn-inline-content {
+  font-size: 0.95em !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pp-fg-muted) !important;
+}
+.bn-block-content[data-content-type="heading"][data-level="6"],
+.bn-block-content[data-content-type="heading"][data-level="6"]
+  .bn-inline-content {
+  font-size: 0.85em !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pp-fg-muted) !important;
+}
+
+/* Cancel BlockNote's animation rule that re-sizes the block AFTER a heading
+   to match the heading's level (this leaks into paragraphs). */
+.bn-block-outer[data-prev-type="heading"]
+  > .bn-block
+  > .bn-block-content:not([data-content-type="heading"]) {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+}
+
+/* Notion-style breathing room above headings */
+.bn-block-outer:has(
+  > .bn-block > .bn-block-content[data-content-type="heading"]:not([data-level])
+),
+.bn-block-outer:has(
+  > .bn-block > .bn-block-content[data-content-type="heading"][data-level="1"]
+) {
+  margin-top: 1.4em;
+}
+.bn-block-outer:has(
+  > .bn-block > .bn-block-content[data-content-type="heading"][data-level="2"]
+) {
+  margin-top: 1.1em;
+}
+.bn-block-outer:has(
+  > .bn-block > .bn-block-content[data-content-type="heading"][data-level="3"]
+) {
+  margin-top: 0.85em;
+}
+.bn-block-outer:first-child {
+  margin-top: 0 !important;
+}
+
+/* ---- Paragraph -------------------------------------------- */
+
+.bn-block-content[data-content-type="paragraph"] .bn-inline-content {
+  color: var(--pp-fg) !important;
+}
+
+/* ---- Inline code chip ------------------------------------- */
+
+.bn-inline-content code,
+.bn-editor code:not(pre code) {
+  background: var(--pp-code-bg) !important;
+  color: var(--pp-code-fg) !important;
+  font-family: var(--pp-mono) !important;
+  font-size: 0.86em !important;
+  padding: 0.18em 0.38em !important;
+  border-radius: 4px !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* ---- Code block ------------------------------------------- */
+/* Notion-style: rounded surface with a subtle header strip that holds the
+   language picker. Picker is always visible (not hover-gated). */
+
+:root {
+  --pp-code-header-bg: var(--pp-code-block-bg);
+  --pp-code-header-border: transparent;
+}
+html.dark {
+  --pp-code-header-bg: var(--pp-code-block-bg);
+  --pp-code-header-border: transparent;
+}
+
+.bn-block-content[data-content-type="codeBlock"] {
+  background: var(--pp-code-block-bg) !important;
+  color: var(--pp-code-block-fg) !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--pp-divider) !important;
+  font-family: var(--pp-mono) !important;
+  position: relative !important;
+  overflow: hidden;
+  padding-top: 30px !important;
+}
+html.dark .bn-block-content[data-content-type="codeBlock"] {
+  border-color: #2a2a2a !important;
+}
+
+/* Header strip behind the language picker */
+.bn-block-content[data-content-type="codeBlock"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: var(--pp-code-header-bg);
+  border-bottom: 1px solid var(--pp-code-header-border);
+  pointer-events: none;
+}
+
+.bn-block-content[data-content-type="codeBlock"] > pre {
+  background: transparent !important;
+  color: var(--pp-code-block-fg);
+  font-family: var(--pp-mono) !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  padding: 12px 16px 14px !important;
+  margin: 0 !important;
+  border: none !important;
+  white-space: pre !important;
+  tab-size: 2;
+}
+.bn-block-content[data-content-type="codeBlock"] > pre code {
+  background: transparent !important;
+  font: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+/* Let Shiki paint per-token colors (inline style on spans) — don't override. */
+.bn-block-content[data-content-type="codeBlock"] > pre code,
+.bn-block-content[data-content-type="codeBlock"] > pre code span {
+  color: inherit;
+}
+
+/* Language picker — always visible chip in the top-left of the header */
+.bn-block-content[data-content-type="codeBlock"] > div {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 30px !important;
+  width: auto !important;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  z-index: 2;
+}
+.bn-block-content[data-content-type="codeBlock"] > div > select {
+  appearance: none;
+  -webkit-appearance: none;
+  opacity: 1 !important;
+  color: var(--pp-fg-muted) !important;
+  background: transparent !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10' fill='none' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='2 4 5 7 8 4'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 10px 10px !important;
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  padding: 3px 22px 3px 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  position: static !important;
+  cursor: pointer !important;
+  transition:
+    background-color 0.12s,
+    border-color 0.12s !important;
+}
+.bn-block-content[data-content-type="codeBlock"] > div > select:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-color: var(--pp-code-header-border) !important;
+  color: var(--pp-fg) !important;
+}
+html.dark
+  .bn-block-content[data-content-type="codeBlock"]
+  > div
+  > select:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+.bn-block-content[data-content-type="codeBlock"] > div > select:focus {
+  outline: none !important;
+  border-color: #2383e2 !important;
+  background-color: rgba(35, 131, 226, 0.08) !important;
+  color: var(--pp-fg) !important;
+}
+.bn-block-content[data-content-type="codeBlock"] > div > select > option {
+  background: var(--pp-code-block-bg);
+  color: var(--pp-fg);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ---- Quote ------------------------------------------------ */
+
+.bn-block-content[data-content-type="quote"] blockquote,
+[data-content-type="quote"] blockquote {
+  border-left: 3px solid var(--pp-quote-border) !important;
+  padding: 2px 14px !important;
+  margin: 0 !important;
+  color: var(--pp-fg) !important;
+  font-style: normal !important;
+  font-size: 1em !important;
+  line-height: 1.6 !important;
+}
+
+/* ---- Divider ---------------------------------------------- */
+
+[data-content-type="divider"] hr {
+  border: none !important;
+  border-top: 1px solid var(--pp-divider) !important;
+  margin: 0.7em 0 !important;
+}
+
+/* ---- Lists ------------------------------------------------ */
+
+.bn-block-content[data-content-type="bulletListItem"]:before,
+.bn-block-content[data-content-type="numberedListItem"]:before {
+  color: var(--pp-fg) !important;
+  font-weight: 500 !important;
+}
+
+.bn-block-content[data-content-type="checkListItem"] > div > input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 3px;
+  border: 1.5px solid var(--pp-fg-muted);
+  background: transparent;
+  margin: 4px 8px 0 4px !important;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+  flex-shrink: 0;
+}
+.bn-block-content[data-content-type="checkListItem"][data-checked="true"]
+  > div
+  > input {
+  background-color: #2383e2;
+  border-color: #2383e2;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='3.5 8.5 6.5 11.5 12.5 5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+}
+.bn-block-content[data-content-type="checkListItem"][data-checked="true"]
+  .bn-inline-content {
+  color: var(--pp-fg-muted) !important;
+}
+
+/* ---- Toggle ----------------------------------------------- */
+
+.bn-toggle-button {
+  color: var(--pp-fg-muted) !important;
+}
+.bn-toggle-button:hover {
+  background: var(--pp-callout-bg) !important;
+}
+
+/* ---- Tables ----------------------------------------------- */
+
+.bn-editor [data-content-type="table"] th,
+.bn-editor [data-content-type="table"] td {
+  border-color: var(--pp-table-border) !important;
+  padding: 6px 10px !important;
+  font-size: 14px !important;
+}
+.bn-editor [data-content-type="table"] th {
+  background: var(--pp-callout-bg) !important;
+  font-weight: 600 !important;
+  color: var(--pp-fg) !important;
+}
+
+/* ---- Links ------------------------------------------------ */
+
+.bn-inline-content a,
+.bn-editor a {
+  color: var(--pp-link) !important;
+  text-decoration: underline;
+  text-decoration-color: rgba(91, 141, 239, 0.4);
+  text-underline-offset: 2px;
+}
+.bn-inline-content a:hover,
+.bn-editor a:hover {
+  text-decoration-color: var(--pp-link);
+}
+
+/* ---- Block-level text & background colors (side menu Colors) ----------- */
+/* These must beat our own !important reset on .bn-inline-content */
+.bn-block-content[data-text-color="gray"]   .bn-inline-content,
+.bn-block-content[data-text-color="gray"]   { color: #9b9a97 !important; }
+.bn-block-content[data-text-color="brown"]  .bn-inline-content,
+.bn-block-content[data-text-color="brown"]  { color: #64473a !important; }
+.bn-block-content[data-text-color="red"]    .bn-inline-content,
+.bn-block-content[data-text-color="red"]    { color: #e03e3e !important; }
+.bn-block-content[data-text-color="orange"] .bn-inline-content,
+.bn-block-content[data-text-color="orange"] { color: #d9730d !important; }
+.bn-block-content[data-text-color="yellow"] .bn-inline-content,
+.bn-block-content[data-text-color="yellow"] { color: #dfab01 !important; }
+.bn-block-content[data-text-color="green"]  .bn-inline-content,
+.bn-block-content[data-text-color="green"]  { color: #4d6461 !important; }
+.bn-block-content[data-text-color="blue"]   .bn-inline-content,
+.bn-block-content[data-text-color="blue"]   { color: #0b6e99 !important; }
+.bn-block-content[data-text-color="purple"] .bn-inline-content,
+.bn-block-content[data-text-color="purple"] { color: #6940a5 !important; }
+.bn-block-content[data-text-color="pink"]   .bn-inline-content,
+.bn-block-content[data-text-color="pink"]   { color: #ad1a72 !important; }
+
+.bn-block-content[data-background-color="gray"]   { background-color: #ebeced !important; border-radius: 3px; }
+.bn-block-content[data-background-color="brown"]  { background-color: #e9e5e3 !important; border-radius: 3px; }
+.bn-block-content[data-background-color="red"]    { background-color: #fbe4e4 !important; border-radius: 3px; }
+.bn-block-content[data-background-color="orange"] { background-color: #f6e9d9 !important; border-radius: 3px; }
+.bn-block-content[data-background-color="yellow"] { background-color: #fbf3db !important; border-radius: 3px; }
+.bn-block-content[data-background-color="green"]  { background-color: #ddedea !important; border-radius: 3px; }
+.bn-block-content[data-background-color="blue"]   { background-color: #ddebf1 !important; border-radius: 3px; }
+.bn-block-content[data-background-color="purple"] { background-color: #eae4f2 !important; border-radius: 3px; }
+.bn-block-content[data-background-color="pink"]   { background-color: #f4dfeb !important; border-radius: 3px; }
+
+html.dark .bn-block-content[data-text-color="gray"]   .bn-inline-content,
+html.dark .bn-block-content[data-text-color="gray"]   { color: #bebdb8 !important; }
+html.dark .bn-block-content[data-text-color="brown"]  .bn-inline-content,
+html.dark .bn-block-content[data-text-color="brown"]  { color: #8e6552 !important; }
+html.dark .bn-block-content[data-text-color="red"]    .bn-inline-content,
+html.dark .bn-block-content[data-text-color="red"]    { color: #ec4040 !important; }
+html.dark .bn-block-content[data-text-color="orange"] .bn-inline-content,
+html.dark .bn-block-content[data-text-color="orange"] { color: #e3790d !important; }
+html.dark .bn-block-content[data-text-color="yellow"] .bn-inline-content,
+html.dark .bn-block-content[data-text-color="yellow"] { color: #dfab01 !important; }
+html.dark .bn-block-content[data-text-color="green"]  .bn-inline-content,
+html.dark .bn-block-content[data-text-color="green"]  { color: #6b8b87 !important; }
+html.dark .bn-block-content[data-text-color="blue"]   .bn-inline-content,
+html.dark .bn-block-content[data-text-color="blue"]   { color: #0e87bc !important; }
+html.dark .bn-block-content[data-text-color="purple"] .bn-inline-content,
+html.dark .bn-block-content[data-text-color="purple"] { color: #8552d7 !important; }
+html.dark .bn-block-content[data-text-color="pink"]   .bn-inline-content,
+html.dark .bn-block-content[data-text-color="pink"]   { color: #da208f !important; }
+
+html.dark .bn-block-content[data-background-color="gray"]   { background-color: #9b9a97 !important; }
+html.dark .bn-block-content[data-background-color="brown"]  { background-color: #64473a !important; }
+html.dark .bn-block-content[data-background-color="red"]    { background-color: #be3434 !important; }
+html.dark .bn-block-content[data-background-color="orange"] { background-color: #b7600a !important; }
+html.dark .bn-block-content[data-background-color="yellow"] { background-color: #b58b00 !important; }
+html.dark .bn-block-content[data-background-color="green"]  { background-color: #4d6461 !important; }
+html.dark .bn-block-content[data-background-color="blue"]   { background-color: #0b6e99 !important; }
+html.dark .bn-block-content[data-background-color="purple"] { background-color: #6940a5 !important; }
+html.dark .bn-block-content[data-background-color="pink"]   { background-color: #ad1a72 !important; }
+
+/* ---- Color picker "A" icon swatches ----------------------- */
+/* Text color icons */
+.bn-color-icon[data-text-color="gray"]   { color: #9b9a97 !important; }
+.bn-color-icon[data-text-color="brown"]  { color: #64473a !important; }
+.bn-color-icon[data-text-color="red"]    { color: #e03e3e !important; }
+.bn-color-icon[data-text-color="orange"] { color: #d9730d !important; }
+.bn-color-icon[data-text-color="yellow"] { color: #dfab01 !important; }
+.bn-color-icon[data-text-color="green"]  { color: #4d6461 !important; }
+.bn-color-icon[data-text-color="blue"]   { color: #0b6e99 !important; }
+.bn-color-icon[data-text-color="purple"] { color: #6940a5 !important; }
+.bn-color-icon[data-text-color="pink"]   { color: #ad1a72 !important; }
+
+/* Background color icons — colored chip behind the "A" */
+.bn-color-icon[data-background-color="gray"]   { background: #ebeced !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="brown"]  { background: #e9e5e3 !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="red"]    { background: #fbe4e4 !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="orange"] { background: #f6e9d9 !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="yellow"] { background: #fbf3db !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="green"]  { background: #ddedea !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="blue"]   { background: #ddebf1 !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="purple"] { background: #eae4f2 !important; border-radius: 3px; }
+.bn-color-icon[data-background-color="pink"]   { background: #f4dfeb !important; border-radius: 3px; }
+
+/* Dark mode text color icons */
+html.dark .bn-color-icon[data-text-color="gray"]   { color: #bebdb8 !important; }
+html.dark .bn-color-icon[data-text-color="brown"]  { color: #8e6552 !important; }
+html.dark .bn-color-icon[data-text-color="red"]    { color: #ec4040 !important; }
+html.dark .bn-color-icon[data-text-color="orange"] { color: #e3790d !important; }
+html.dark .bn-color-icon[data-text-color="yellow"] { color: #dfab01 !important; }
+html.dark .bn-color-icon[data-text-color="green"]  { color: #6b8b87 !important; }
+html.dark .bn-color-icon[data-text-color="blue"]   { color: #0e87bc !important; }
+html.dark .bn-color-icon[data-text-color="purple"] { color: #8552d7 !important; }
+html.dark .bn-color-icon[data-text-color="pink"]   { color: #da208f !important; }
+
+/* Dark mode background color icons */
+html.dark .bn-color-icon[data-background-color="gray"]   { background: #9b9a97 !important; }
+html.dark .bn-color-icon[data-background-color="brown"]  { background: #64473a !important; }
+html.dark .bn-color-icon[data-background-color="red"]    { background: #be3434 !important; }
+html.dark .bn-color-icon[data-background-color="orange"] { background: #b7600a !important; }
+html.dark .bn-color-icon[data-background-color="yellow"] { background: #b58b00 !important; }
+html.dark .bn-color-icon[data-background-color="green"]  { background: #4d6461 !important; }
+html.dark .bn-color-icon[data-background-color="blue"]   { background: #0b6e99 !important; }
+html.dark .bn-color-icon[data-background-color="purple"] { background: #6940a5 !important; }
+html.dark .bn-color-icon[data-background-color="pink"]   { background: #ad1a72 !important; }
+
+/* ---- Slash menu / formatting toolbar / drag handle -------- */
+
+.mantine-Menu-dropdown,
+.bn-slash-menu,
+.bn-formatting-toolbar {
+  background: #ffffff !important;
+  border: 1px solid var(--pp-divider) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
+}
+.mantine-Menu-item {
+  color: var(--pp-fg) !important;
+  font-size: 13px !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+}
+.mantine-Menu-item:hover,
+.mantine-Menu-item[data-hovered] {
+  background: var(--pp-callout-bg) !important;
+}
+.bn-formatting-toolbar button {
+  color: var(--pp-fg) !important;
+}
+.bn-formatting-toolbar button:hover {
+  background: var(--pp-callout-bg) !important;
+}
+.bn-drag-handle,
+.bn-side-menu {
+  color: var(--pp-fg-muted) !important;
+}
+
+/* Dark mode dropdown surfaces */
+html.dark .mantine-Menu-dropdown,
+html.dark .bn-slash-menu,
+html.dark .bn-formatting-toolbar {
+  background: #1f1f1f !important;
+  border-color: #2a2a2a !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ---- Placeholder ------------------------------------------ */
+
+.bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
+  color: var(--pp-fg-muted) !important;
+  font-style: normal !important;
+  opacity: 0.55;
+}
+
+/* ---- Spinner ---------------------------------------------- */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Formatting toolbar — active/selected button state */
+.bn-formatting-toolbar .mantine-ActionIcon-root[data-active="true"],
+.bn-formatting-toolbar .mantine-ActionIcon-root[data-selected],
+.bn-formatting-toolbar .mantine-Button-root[data-active="true"],
+.bn-formatting-toolbar .mantine-Button-root[data-selected],
+.bn-toolbar .mantine-ActionIcon-root[data-active="true"],
+.bn-toolbar .mantine-ActionIcon-root[data-selected],
+.bn-toolbar .mantine-Button-root[data-active="true"],
+.bn-toolbar .mantine-Button-root[data-selected] {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  color: var(--pp-fg) !important;
+}
+html.dark .bn-formatting-toolbar .mantine-ActionIcon-root[data-active="true"],
+html.dark .bn-formatting-toolbar .mantine-ActionIcon-root[data-selected],
+html.dark .bn-formatting-toolbar .mantine-Button-root[data-active="true"],
+html.dark .bn-formatting-toolbar .mantine-Button-root[data-selected],
+html.dark .bn-toolbar .mantine-ActionIcon-root[data-active="true"],
+html.dark .bn-toolbar .mantine-ActionIcon-root[data-selected],
+html.dark .bn-toolbar .mantine-Button-root[data-active="true"],
+html.dark .bn-toolbar .mantine-Button-root[data-selected] {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--pp-fg) !important;
+}
+
+/* ============================================================
+   Lecture Mode — roomier, reading-optimized typography
+   ============================================================ */
+
+.lecture-mode-content .bn-editor {
+  cursor: default;
+}
+.lecture-mode-content .bn-default-styles,
+.lecture-mode-content .bn-block-content,
+.lecture-mode-content .bn-inline-content {
+  font-size: 17.5px !important;
+  line-height: 1.85 !important;
+}
+.lecture-mode-content .bn-block-outer {
+  margin-bottom: 0.3em;
+}
+.lecture-mode-content .bn-block-content[data-content-type="codeBlock"] > pre {
+  font-size: 14.5px !important;
+  line-height: 1.7 !important;
+}
+/* Side menu / drag handles are inert in read-only mode — hide them */
+.lecture-mode-content .bn-side-menu,
+.lecture-mode-content .bn-drag-handle {
+  display: none !important;
+}
+
+/* ============================================================
+   Math block / inline (KaTeX)
+   ============================================================ */
+
+.kg-math-block {
+  display: flex;
+  justify-content: center;
+  padding: 14px 8px;
+  margin: 4px 0;
+  overflow-x: auto;
+}
+.kg-math-block .katex-display {
+  margin: 0 !important;
+}
+.kg-math-block-source {
+  width: 100%;
+  font-family: var(--pp-mono);
+  font-size: 14px;
+  color: var(--pp-fg-muted);
+  background: var(--pp-code-block-bg);
+  border: 1px solid var(--pp-divider);
+  border-radius: 6px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+.kg-math-inline {
+  display: inline-block;
+  padding: 0 2px;
+}
+.kg-math-inline-placeholder {
+  font-family: var(--pp-mono);
+  font-size: 0.86em;
+  color: #0d9488;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+
+/* ============================================================
+   Python notebook cell
+   ============================================================ */
+
+.kg-py-cell {
+  border: 1px solid var(--pp-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--pp-code-block-bg);
+  margin: 4px 0;
+}
+.kg-py-cell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--pp-code-header-bg, rgba(0, 0, 0, 0.03));
+  border-bottom: 1px solid var(--pp-divider);
+}
+html.dark .kg-py-cell-header {
+  background: rgba(255, 255, 255, 0.03);
+}
+.kg-py-cell-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pp-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.kg-py-run-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.kg-py-run-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+.kg-py-run-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.kg-code-editor {
+  position: relative;
+}
+.kg-code-editor-highlight,
+.kg-code-editor-input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  font-family: var(--pp-mono);
+  font-size: 13.5px;
+  line-height: 1.55;
+  padding: 12px 16px;
+  margin: 0;
+  border: none;
+  tab-size: 4;
+  white-space: pre;
+  overflow-x: auto;
+}
+.kg-code-editor-highlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent !important;
+}
+.kg-code-editor-highlight pre {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font: inherit !important;
+  white-space: pre !important;
+}
+.kg-code-editor-highlight code {
+  background: transparent !important;
+  font: inherit !important;
+}
+.kg-code-editor-input {
+  position: relative;
+  min-height: 60px;
+  resize: vertical;
+  outline: none;
+  color: transparent;
+  background: transparent;
+  caret-color: var(--pp-code-block-fg);
+  -webkit-text-fill-color: transparent;
+}
+.kg-code-editor-input::selection {
+  background: var(--pp-selection);
+  -webkit-text-fill-color: transparent;
+}
+.kg-py-cell-output {
+  border-top: 1px solid var(--pp-divider);
+  padding: 10px 16px;
+  font-family: var(--pp-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--pp-fg);
+  max-height: 320px;
+  overflow: auto;
+}
+.kg-py-cell-output.kg-py-error {
+  color: #ef4444;
+}
+.kg-py-cell-output-empty {
+  font-style: italic;
+  color: var(--pp-fg-muted);
+}
